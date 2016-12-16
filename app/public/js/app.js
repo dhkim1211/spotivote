@@ -17,5 +17,16 @@ angular.module('spotivote', ['ui.router'])
                     templateUrl:'/views/register.html',
                     controller: 'MainCtrl'
                 })
+                .state('spotify', {
+                    url: '/auth/spotify',
+                    onEnter: function() {
+                        window.location = "http://localhost:3000/auth/spotify"
+                    }
+                })
+                .state('profile', {
+                    url: '/profile',
+                    templateUrl: '/views/profile.html',
+                    controller: 'ProfileCtrl'
+                })
             $locationProvider.html5Mode(true);
         }])
