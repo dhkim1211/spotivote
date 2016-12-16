@@ -30,6 +30,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', index);
 app.use('/users', users);
 
+// send angular page for * to enable html5mode (routing through angular)
+app.get('/*/', function(req, res) {
+  console.log('hit get /*/')
+  res.sendfile('./public/index.html');
+});
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
