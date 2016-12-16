@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <base href="/">
+
+    <title>Spotivote</title>
+
+    <!-- CSS -->
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">-->
+    <link rel="stylesheet" href="/css/style.css"> <!-- custom styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
+
+    <!-- JS -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.5/angular.js"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/js/materialize.min.js"></script>
+    <!-- UI-Router -->
+    <script src="https://angular-ui.github.io/ui-router/release/angular-ui-router.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.7/angular-resource.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-materialize/0.1.9/angular-materialize.min.js"></script>
+
+
+</head>
+<body ng-app="spotivote" ng-controller="MainCtrl">
+<!-- NAVBAR -->
+<!-- HEADER -->
+<nav role="navigation" class="grey darken-4">
+    <div class="nav-wrapper container">
+        <ul class="right hide-on-med-and-down">
+            <li><a href="/register" class="navlink">Register</a></li>
+            <li><a href="/login" class="navlink">Login</a></li>
+        </ul>
+        <ul id="nav-mobile" class="side-nav red lighten-2">
+            <li><a href="/register" class="navlink">Register</a></li>
+            <li><a href="/login" class="navlink">Login</a></li>
+        </ul>
+        <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
+    </div>
+</nav>
+
+<!-- ANGULAR DYNAMIC CONTENT -->
+<div ui-view></div>
+
+<script src="/js/app.js"></script>
+<script src="/js/services/services.js"></script>
+<script src="/js/controllers/MainCtrl.js"></script>
+<script>
+    $(document).ready(function(){
+        $('.button-collapse').sideNav({
+            menuWidth: 300, // Default is 240
+            edge: 'right', // Choose the horizontal origin
+            closeOnClick: true // Closes side-nav on <a> clicks, useful for Angular/Meteor
+        });
+    })
+</script>
+</body>
+</html>

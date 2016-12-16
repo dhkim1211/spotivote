@@ -31,7 +31,7 @@ app.use('/', index);
 app.use('/users', users);
 
 // send angular page for * to enable html5mode (routing through angular)
-app.get('/*/', function(req, res) {
+app.get('/*', function(req, res) {
   console.log('hit get /*/')
   res.sendfile('./public/index.html');
 });
