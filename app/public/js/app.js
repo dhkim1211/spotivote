@@ -28,5 +28,10 @@ angular.module('spotivote', ['ui.router'])
                     templateUrl: '/views/profile.html',
                     controller: 'ProfileCtrl'
                 })
+                .state('search', {
+                    url: '/search',
+                    templateUrl: '/views/search.html',
+                    controller: 'SearchCtrl'
+                })
             $locationProvider.html5Mode(true);
         }])

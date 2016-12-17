@@ -1,10 +1,18 @@
 <div class="col m12" ng-controller="ProfileCtrl">
     <div class="row">
         <div class="card red lighten-3 col m6 offset-m3 center-align">
-            <h3>Hey {{profile.username}}!</h3>
-            <div class="">
-                <p class="oswald">Let's find you a job!</p>
-                <p class="oswald">You can find your saved jobs below:</p>
+            <h3>Hey {{profile.id}}!</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="card red lighten-3 col m6 offset-m3 center-align">
+            <h3>Here are your playlists:</h3>
+            <div ng-repeat="playlist in playlists">
+                <ul>
+                    <li>{{playlist.name}}</li>
+                    <li>{{playlist.tracks.total}} Tracks</li>
+                    <li><img style="width: 50px" src="{{playlist.images[0].url}}"></li>
+                </ul>
             </div>
         </div>
     </div>

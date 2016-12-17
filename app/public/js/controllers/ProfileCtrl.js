@@ -6,10 +6,12 @@ angular.module('spotivote')
                 method: 'GET'
             }).success(function(data) {
                 event.preventDefault();
-
-                $scope.profile = data;
-                $state.go('profile', {profile: data})
                 console.log(data)
+                $scope.profile = data.user;
+                $scope.playlists = data.playlists.items;
+
+                $state.go('profile', {profile: data})
+
             })
 
         }]);

@@ -3,9 +3,9 @@ var User = require('../models/user');
 
 module.exports = function(passport) {
     // Use the SpotifyStrategy within Passport.
-//   Strategies in Passport require a `verify` function, which accept
-//   credentials (in this case, an accessToken, refreshToken, and spotify
-//   profile), and invoke a callback with a user object.
+    //   Strategies in Passport require a `verify` function, which accept
+    //   credentials (in this case, an accessToken, refreshToken, and spotify
+    //   profile), and invoke a callback with a user object.
     passport.use(new SpotifyStrategy({
             clientID: '23affdd1353d40b181322db6bbca406c',
             clientSecret: 'b917af777ab946488da74aa1111d9d86',
@@ -21,6 +21,10 @@ module.exports = function(passport) {
                 if (err) {return done(err);}
                 console.log('user', user);
                 if (user) {
+                    user.accessToken = accessToken;
+                    user.refreshToken = refreshToken;
+                    user.save();
+
                     return done(null, user);
                 }
                 else {
@@ -28,7 +32,9 @@ module.exports = function(passport) {
                     User.create({
                         username: profile.id,
                         spotifyId: profile.id,
-                        email: profile.email
+                        email: profile.email,
+                        accessToken: accessToken,
+                        refreshToken: refreshToken
                     }, function(err, newUser) {
                         console.log('newUser');
                         if (err) return done(err);
@@ -38,13 +44,6 @@ module.exports = function(passport) {
                 }
 
             })
-            // process.nextTick(function () {
-            //     // To keep the example simple, the user's spotify profile is returned to
-            //     // represent the logged-in user. In a typical application, you would want
-            //     // to associate the spotify account with a user record in your database,
-            //     // and return that user instead.
-            //     return done(null, newUser);
-            // });
         }));
 
 }

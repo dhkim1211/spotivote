@@ -15,6 +15,8 @@ var userSchema = new Schema({
     firstName: String,
     lastName: String,
     email: String,
+    accessToken: String,
+    refreshToken: String,
     createdAt: Date,
     updatedAt: Date
 });
