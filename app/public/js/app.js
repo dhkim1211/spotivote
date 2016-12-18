@@ -33,5 +33,15 @@ angular.module('spotivote', ['ui.router'])
                     templateUrl: '/views/search.html',
                     controller: 'SearchCtrl'
                 })
+                .state('playlist', {
+                    url: '/playlist/:id',
+                    params: {
+                        id: null,
+                        playlist: null,
+                        username: null
+                    },
+                    templateUrl: '/views/playlist.html',
+                    controller: 'PlaylistCtrl'
+                })
             $locationProvider.html5Mode(true);
         }])

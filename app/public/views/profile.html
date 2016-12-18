@@ -5,20 +5,31 @@
         </div>
     </div>
     <div class="row">
-        <div class="card red lighten-3 col m6 offset-m3 center-align">
-            <h3>Here are your playlists:</h3>
-            <div ng-repeat="playlist in playlists">
-                <ul>
-                    <li>{{playlist.name}}</li>
-                    <li>{{playlist.tracks.total}} Tracks</li>
-                    <li><img style="width: 50px" src="{{playlist.images[0].url}}"></li>
-                </ul>
+        <div class="center-align">
+            <button class="btn center-align" ng-click="create = true">Create A Playlist</button>
+        </div>
+    </div>
+    <div class="row" ng-if="create">
+        <div class="col s8 offset-s2 m4 offset-m4">
+            <div class="input-field">
+                <form class="form-signin login">
+                    <input class="form-control login center-align", type="text", name="playlistName", ng-model="name", placeholder="Enter Playlist Name", required, autofocus>
+                    <button class="btn center-align" type="submit" value="submit" ng-click="createPlaylist(name)">Create Playlist</button>
+                </form>
             </div>
         </div>
     </div>
     <div class="row">
-        <div ui-view="myjobs">
-
+        <div class="card red lighten-3 col m6 offset-m3 center-align">
+            <h3>Here are your playlists:</h3>
+            <div ng-repeat="playlist in playlists">
+                <ul>
+                    <li><a ng-click="viewPlaylist(playlist.id, profile.id)" >{{playlist.name}}</a></li>
+                    <li>{{playlist.tracks.total}} Tracks</li>
+                    <li>{{playlist.id}}</li>
+                    <li><img style="width: 50px" src="{{playlist.images[0].url}}"></li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>

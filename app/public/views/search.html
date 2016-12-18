@@ -1,21 +1,23 @@
-<div class="row" ng-controller="SearchCtrl">
-    <div class="col s8 offset-s2 m4 offset-m4">
-        <div class="input-field">
-            <form class="form-signin login" >
-                <h1 class="text-center login">Search</h1>
-                <input class="form-control login center-align", type="text", name="artist", ng-model="formData.artist", placeholder="Artist", required, autofocus>
-                <input class="form-control login center-align", type="text", name="album", ng-model="formData.album", placeholder="Album", required, autofocus>
-                <input class="form-control login center-align", type="text", name="track", ng-model="formData.track", placeholder="Song", required, autofocus>
-                <button class="btn center-align" type="submit" value="submit" ng-click="search(formData.artist, formData.album, formData.track)">Search</button>
-            </form>
+<div class="col m12">
+    <div class="row" ng-controller="SearchCtrl">
+        <div class="col s6">
+            <div class="input-field">
+                <form class="form-signin login" >
+                    <h1 class="text-center login">Search</h1>
+                    <input class="form-control login center-align", type="text", name="artist", ng-model="formData.artist", placeholder="Artist", required, autofocus>
+                    <input class="form-control login center-align", type="text", name="album", ng-model="formData.album", placeholder="Album", required, autofocus>
+                    <input class="form-control login center-align", type="text", name="track", ng-model="formData.track", placeholder="Song", required, autofocus>
+                    <button class="btn center-align" type="submit" value="submit" ng-click="search(formData.artist, formData.album, formData.track)">Search</button>
+                </form>
+            </div>
         </div>
-    </div>
-    <div class="col s8 offset-s2 m4 offset-m4" ng-if="results">
-        <h1>Results:</h1>
-        <ul ng-repeat="result in results | orderBy: 'popularity'">
-            <li>{{result.name}} - {{result.artists[0].name}}</li>
-            <li>{{result.id}}</li>
-            <li><img style="width: 75px;" src="{{result.images[0].url}}"></li>
-        </ul>
+        <div class="col s8 offset-s2 m4 offset-m4" ng-if="results">
+            <h1>Results:</h1>
+            <ul ng-repeat="result in results | orderBy: 'popularity'">
+                <li>{{result.name}} - {{result.artists[0].name}}</li>
+                <li>{{result.id}}</li>
+                <li><img style="width: 75px;" src="{{result.images[0].url}}"></li>
+            </ul>
+        </div>
     </div>
 </div>

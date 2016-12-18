@@ -57,9 +57,58 @@ router.post('/search', isAuthenticated, function(req, res) {
     if (req.body.track)
         query = query + 'track:' + req.body.track;
 
-    // Search tracks whose artist's name contains 'Kendrick Lamar', and track name contains 'Alright'
+    // Search tracks
     spotifyApi.searchTracks(query)
         .then(function(data) {
+            res.send(data);
+        }, function(err) {
+            console.log('Something went wrong!', err);
+        });
+});
+
+router.post('/playlist/create', isAuthenticated, function(req, res) {
+    var spotifyApi = new SpotifyWebApi({
+        accessToken: req.user.accessToken
+    });
+
+    // Create a private playlist
+    spotifyApi.createPlaylist(req.user.username, req.body.playlistName, { 'public' : false })
+        .then(function(data) {
+            console.log('Created playlist!');
+            res.send(data);
+        }, function(err) {
+            console.log('Something went wrong!', err);
+        });
+
+});
+
+router.get('/playlist/:id', isAuthenticated, function(req, res) {
+    var spotifyApi  = new SpotifyWebApi({
+        accessToken: req.user.accessToken
+    });
+
+    // Get a playlist
+    spotifyApi.getPlaylist(req.user.username, req.params.id)
+        .then(function(data) {
+            data.username = req.user.username;
+            console.log('Some information about this playlist', data.body);
+            res.send(data);
+        }, function(err) {
+            console.log('Something went wrong!', err);
+        });
+})
+
+router.post('/playlist/:id', isAuthenticated, function(req, res) {
+    var spotifyApi = new SpotifyWebApi({
+        accessToken: req.user.accessToken
+    });
+
+    var trackToAdd = ['spotify:track:' + req.body.track];
+
+    // Add tracks to a playlist
+    spotifyApi.addTracksToPlaylist(req.user.username, req.params.id, trackToAdd)
+        .then(function(data) {
+            console.log('Added tracks to playlist!');
             res.send(data);
         }, function(err) {
             console.log('Something went wrong!', err);
