@@ -115,4 +115,19 @@ router.post('/playlist/:id', isAuthenticated, function(req, res) {
         });
 });
 
+router.put('/playlist/:id', isAuthenticated, function(req, res) {
+    var spotifyApi = new SpotifyWebApi({
+        accessToken: req.user.accessToken
+    });
+
+    // Reorder the first two tracks in a playlist to the place before the track at the 10th position
+    var options = { "range_length" : 1 };
+    spotifyApi.reorderTracksInPlaylist(req.user.username, req.params.id, req.body.initialPosition, req.body.destinationPosition, options)
+        .then(function(data) {
+            console.log('Tracks reordered in playlist!');
+        }, function(err) {
+            console.log('Something went wrong!', err);
+        });
+})
+
 module.exports = router;
