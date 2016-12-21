@@ -1,4 +1,4 @@
-angular.module('spotivote', ['ui.router'])
+angular.module('spotivote', ['ui.router', 'ui.sortable'])
     .config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
         function($stateProvider, $urlRouterProvider, $locationProvider) {
             $stateProvider

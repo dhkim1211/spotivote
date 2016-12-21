@@ -16,7 +16,9 @@
             <ul ng-repeat="result in results | orderBy: 'popularity'">
                 <li>{{result.name}} - {{result.artists[0].name}}</li>
                 <li>{{result.id}}</li>
-                <li><img style="width: 75px;" src="{{result.images[0].url}}"></li>
+                <li><img style="width: 75px;" src="{{result.album.images[0].url}}"></li>
+                <li><a href="#" ng-click="addTrackToPlaylist(result.id)">Add To Playlist</a></li>
+                <!--<li><img style="width: 75px;" src="{{result.images[0].url}}"></li>-->
             </ul>
         </div>
     </div>

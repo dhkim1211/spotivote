@@ -27,5 +27,19 @@ angular.module('spotivote')
                 })
             }
 
+            $scope.addTrackToPlaylist = function(trackId) {
+                $http({
+                    url: '/playlist/0dJngvMC4JuqfQn1agu4p3',
+                    method: 'POST',
+                    data: {
+                        track: trackId
+                    }
+                }).success(function(data) {
+                    event.preventDefault();
+                    console.log(data);
+                    $state.go('playlist', {id: '0dJngvMC4JuqfQn1agu4p3'});
+                })
+            }
+
 
         }]);

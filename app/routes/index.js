@@ -92,7 +92,7 @@ router.get('/playlist/:id', isAuthenticated, function(req, res) {
         .then(function(data) {
             data.username = req.user.username;
             console.log('Some information about this playlist', data.body);
-            res.send(data);
+            res.send(data.body);
         }, function(err) {
             console.log('Something went wrong!', err);
         });
@@ -128,6 +128,35 @@ router.put('/playlist/:id', isAuthenticated, function(req, res) {
         }, function(err) {
             console.log('Something went wrong!', err);
         });
-})
+});
+
+router.delete('/playlist/:id', isAuthenticated, function(req, res) {
+    var spotifyApi = new SpotifyWebApi({
+        accessToken: req.user.accessToken
+    });
+
+    console.log('req.body', req.body);
+    console.log('req.params', req.params);
+    console.log('req.query', req.query);
+    // // Remove all occurrence of a track
+    // var tracks = { tracks : [{ uri : 'spotify:track:' + req.params.trackId }] };
+    // var options = { snapshot_id : req.query.snapshot };
+    // spotifyApi.removeTracksFromPlaylist(req.user.username, req.params.id, tracks, options)
+    //     .then(function(data) {
+    //         console.log('Tracks removed from playlist!');
+    //         res.send(data);
+    //     }, function(err) {
+    //         console.log('Something went wrong!', err);
+    //     });
+
+    // Remove tracks from a playlist at a specific position
+    spotifyApi.removeTracksFromPlaylistByPosition(req.user.username, req.params.id, [parseInt(req.query.position)], req.query.snapshot)
+        .then(function(data) {
+            console.log('Tracks removed from playlist!');
+            res.send(data);
+        }, function(err) {
+            console.log('Something went wrong!', err);
+        });
+});
 
 module.exports = router;

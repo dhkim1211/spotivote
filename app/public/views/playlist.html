@@ -3,11 +3,56 @@
         <div class="card red lighten-3 col m6 offset-m3 center-align">
             <h3>Hey {{username}}!</h3>
         </div>
-        <div class="card red lighten-3 col m6 offset-m3 center-align">
-            <h3>{{playlist.name}}:</h3>
-            <div ng-repeat="track in playlist.tracks.items">
-                <p>{{track.track.name}} by {{track.track.artists[0].name}}</p>
+    </div>
+    <div class="row">
+        <div class="center-align">
+            <button class="btn center-align" ng-click="searching = true">Add Songs To Playlist</button>
+        </div>
+    </div>
+    <div class="row" ng-if="searching">
+        <div class="col s8 offset-s2 m4 offset-m4">
+            <div class="input-field">
+                <form class="form-signin login" >
+                    <input class="form-control login center-align", type="text", name="artist", ng-model="formData.artist", placeholder="Artist", required, autofocus>
+                    <input class="form-control login center-align", type="text", name="album", ng-model="formData.album", placeholder="Album", required, autofocus>
+                    <input class="form-control login center-align", type="text", name="track", ng-model="formData.track", placeholder="Song", required, autofocus>
+                    <button class="btn center-align" type="submit" value="submit" ng-click="search(formData.artist, formData.album, formData.track)">Search</button>
+                </form>
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col s8 offset-s2 m4 offset-m4" ng-if="results">
+            <h1>Results:</h1>
+            <ul ng-repeat="result in results | orderBy: 'popularity'">
+                <li>{{result.name}} - {{result.artists[0].name}}</li>
+                <li>{{result.id}}</li>
+                <li><img style="width: 75px;" src="{{result.album.images[0].url}}"></li>
+                <li><a href="#" ng-click="addTrackToPlaylist(result.id)">Add To Playlist</a></li>
+                <!--<li><img style="width: 75px;" src="{{result.images[0].url}}"></li>-->
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <table class="red lighten-3 col m6 offset-m3 center-align">
+            <thead>
+                <tr>
+                    <th>{{name}}:</th>
+                </tr>
+            </thead>
+            <tbody ui-sortable ng-model="playlist">
+                <tr ng-repeat="track in playlist track by $index" class="track" style="cursor: move;">
+                    <td>{{$index}}</td>
+                    <td>{{track.track.name}} by {{track.track.artists[0].name}} <a href="#" ng-click="removeTrack($index)">Remove</a></td>
+                </tr>
+            </tbody>
+
+            <hr>
+        </table>
+    </div>
+    <!--<div class="row card red lighten-3 col m6 offset-m3 center-align">-->
+        <!--<ul ui-sortable="sortableOptions" ng-model="array">-->
+            <!--<li ng-repeat="track in array track by $index" style="cursor: move;">{{track}}</li>-->
+        <!--</ul>-->
+    <!--</div>-->
 </div>
