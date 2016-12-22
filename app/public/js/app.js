@@ -37,7 +37,6 @@ angular.module('spotivote', ['ui.router', 'ui.sortable'])
                     url: '/playlist/:id',
                     params: {
                         id: null,
-                        playlist: null,
                         username: null
                     },
                     templateUrl: '/views/playlist.html',

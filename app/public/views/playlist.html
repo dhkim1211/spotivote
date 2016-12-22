@@ -28,7 +28,7 @@
                 <li>{{result.name}} - {{result.artists[0].name}}</li>
                 <li>{{result.id}}</li>
                 <li><img style="width: 75px;" src="{{result.album.images[0].url}}"></li>
-                <li><a href="#" ng-click="addTrackToPlaylist(result.id)">Add To Playlist</a></li>
+                <li><a href="#" ng-click="addTrackToPlaylist(result.id, result.name, result.artists[0].name)">Add To Playlist</a></li>
                 <!--<li><img style="width: 75px;" src="{{result.images[0].url}}"></li>-->
             </ul>
         </div>
@@ -40,10 +40,10 @@
                     <th>{{name}}:</th>
                 </tr>
             </thead>
-            <tbody ui-sortable ng-model="playlist">
+            <tbody ui-sortable="sortableOptions" ng-model="playlist">
                 <tr ng-repeat="track in playlist track by $index" class="track" style="cursor: move;">
                     <td>{{$index}}</td>
-                    <td>{{track.track.name}} by {{track.track.artists[0].name}} <a href="#" ng-click="removeTrack($index)">Remove</a></td>
+                    <td>{{track.track.name}} by {{track.track.artists[0].name}} <a href="#" ng-click="removeTrack($index, track.track.id)">Remove</a></td>
                 </tr>
             </tbody>
 

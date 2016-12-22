@@ -14,7 +14,7 @@
             <div class="input-field">
                 <form class="form-signin login">
                     <input class="form-control login center-align", type="text", name="playlistName", ng-model="name", placeholder="Enter Playlist Name", required, autofocus>
-                    <button class="btn center-align" type="submit" value="submit" ng-click="createPlaylist(name)">Create Playlist</button>
+                    <button class="btn center-align" ng-click="createPlaylist(name)">Create Playlist</button>
                 </form>
             </div>
         </div>
@@ -24,7 +24,7 @@
             <h3>Here are your playlists:</h3>
             <div ng-repeat="playlist in playlists">
                 <ul>
-                    <li><a ng-click="viewPlaylist(playlist.id, profile.id)" >{{playlist.name}}</a></li>
+                    <li><a href="#" ng-click="viewPlaylist(playlist.id, playlist.owner.id)" >{{playlist.name}}</a></li>
                     <li>{{playlist.tracks.total}} Tracks</li>
                     <li>{{playlist.id}}</li>
                     <li><img style="width: 50px" src="{{playlist.images[0].url}}"></li>
