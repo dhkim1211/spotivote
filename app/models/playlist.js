@@ -3,23 +3,28 @@ var Schema = mongoose.Schema;
 
 var playlistSchema = new Schema({
     name: {
-        type: String
+        type: String,
+        required: true
     },
-    userId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+    user: {
+        type: String,
+        ref: 'User',
+        required: true
     },
     tracks: [{
         id: String,
-        position: Number,
+        name: String,
+        artist: String,
         votes: Number
     }],
+    accessCode: Number,
+    playlistId: String,
     createdAt: Date,
     updatedAt: Date
 });
 
 // on every save, add the date
-userSchema.pre('save', function(next) {
+playlistSchema.pre('save', function(next) {
     // get the current date
     var currentDate = new Date();
 
@@ -29,6 +34,9 @@ userSchema.pre('save', function(next) {
     // if created_at doesn't exist, add to that field
     if (!this.createdAt)
         this.createdAt = currentDate;
+
+    if (!this.accessCode)
+        this.accessCode = Math.floor(Math.random()*90000) + 10000;
 
     next();
 });
