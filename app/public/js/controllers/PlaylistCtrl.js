@@ -4,7 +4,7 @@ angular.module('spotivote')
             $scope.id = $stateParams.id;
             $scope.username = $stateParams.username;
 
-            var list = [];
+            // var list = [];
 
             $http({
                 url: '/playlist/' + $scope.id,
@@ -14,14 +14,15 @@ angular.module('spotivote')
                 console.log(data);
                 $scope.snapshotId = data.snapshot_id;
                 data.tracks.items.forEach(function(track) {
-                    list.push(track);
+                    $scope.playlist.push(track);
                 })
                 console.log('items', data.tracks.items);
                 // $scope.playlist = data.body.tracks.items;
                 $scope.name = data.name;
             })
 
-            $scope.playlist = list;
+            // $scope.playlist = list;
+            $scope.playlist = [];
 
             $scope.searching = false;
             $scope.formData = {artist: '', album: '', track: ''};
@@ -69,11 +70,39 @@ angular.module('spotivote')
 
             $scope.removeTrack = function(position, track) {
                 $http({
-                    url: '/playlist/' + $scope.id + '?position=' + position + '&snapshot=' + $scope.snapshotId + '&track=' + track,
+                    url: '/playlist/' + $scope.id + '?position=' + position + '&track=' + track + '&snapshot=' + $scope.snapshotId,
                     method: 'DELETE'
                 }).success(function(data) {
                     event.preventDefault();
                     console.log(data);
+                    $scope.results = '';
+                    $state.go($state.current, {}, {reload: true});
+                })
+            }
+
+            $scope.addVote = function(track) {
+                $http({
+                    url: '/playlist/' + $scope.id + '/vote',
+                    method: 'POST',
+                    data: {
+                        track: track
+                    }
+                }).success(function(data) {
+                    event.preventDefault();
+                    console.log(data);
+                    // $http({
+                    //     url: '/playlist/' + $scope.id,
+                    //     method: 'PUT',
+                    //     data: {
+                    //         initialPosition: data,
+                    //         destinationPosition: data - 1
+                    //     }
+                    // }).success(function(data) {
+                    //     event.preventDefault();
+                    //     console.log(data);
+                    //     $scope.results = '';
+                    //     $state.go($state.current, {}, {reload: true});
+                    // })
                     $scope.results = '';
                     $state.go($state.current, {}, {reload: true});
                 })

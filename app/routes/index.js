@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
 var Playlist = require('../models/playlist');
+const co     = require('co');
 
 var SpotifyWebApi = require('spotify-web-api-node');
 
@@ -102,7 +103,14 @@ router.get('/playlist/:id', isAuthenticated, function(req, res) {
         .then(function(data) {
             data.username = req.user.username;
             console.log('Some information about this playlist', data.body);
-            res.send(data.body);
+            Playlist.findOne({ playlistId: req.params.id}, function(err, playlist) {
+                if (err) throw err;
+                for (var i = 0; i < playlist.tracks.length; i++) {
+                    data.body.tracks.items[i].votes = playlist.tracks[i].votes;
+                }
+                res.send(data.body);
+            })
+
         }, function(err) {
             console.log('Something went wrong!', err);
         });
@@ -159,11 +167,14 @@ router.delete('/playlist/:id', isAuthenticated, function(req, res) {
         accessToken: req.user.accessToken
     });
 
+    var snapshot = req.query.snapshot.replace(/ /g, "+");
+
     // Remove tracks from a playlist at a specific position
-    spotifyApi.removeTracksFromPlaylistByPosition(req.user.username, req.params.id, [parseInt(req.query.position)], req.query.snapshot)
+    spotifyApi.removeTracksFromPlaylistByPosition(req.user.username, req.params.id, [parseInt(req.query.position)], snapshot)
         .then(function(data) {
-            console.log('Tracks removed from playlist!');
-            console.log('req.query.track', req.query.track);
+            console.log('Track removed from playlist!');
+
+            // Remove track from db
             Playlist.findOneAndUpdate({ playlistId: req.params.id}, {
                 $pull: { tracks: { id: req.query.track}}
             }, function(err, playlist) {
@@ -173,6 +184,74 @@ router.delete('/playlist/:id', isAuthenticated, function(req, res) {
         }, function(err) {
             console.log('Something went wrong!', err);
         });
+});
+
+router.post('/playlist/:id/vote', isAuthenticated, function(req, res) {
+    var spotifyApi = new SpotifyWebApi({
+        accessToken: req.user.accessToken
+    });
+
+    Playlist.findOne({ playlistId: req.params.id}, function(err, playlist) {
+        if (err) throw err;
+
+        var count = playlist.tracks.length - 1;
+        for (var i = 0; i < 1; i++) {
+            if (playlist.tracks[i].id == req.body.track) {
+                playlist.tracks[i].votes++;
+                playlist.save(function(err) {
+                    if (err) throw err;
+                    count++;
+                })
+            }
+        }
+
+        var counter = 1;
+        for (var i = 1; i < playlist.tracks.length; i++) {
+            if (playlist.tracks[i].id == req.body.track) {
+                playlist.tracks[i].votes++;
+                var selectedTrack = playlist.tracks[i];
+                var position = i - 1;
+
+                // If voted-up track has more votes than previous track, move the track up in playlist position
+                if (playlist.tracks[i].votes > playlist.tracks[i-1].votes) {
+
+                    var options = { "range_length" : 1 };
+
+                    spotifyApi.reorderTracksInPlaylist(req.user.username, req.params.id, i, (i-1), options)
+                        .then(function(data) {
+                            console.log('Tracks reordered in playlist!');
+                        }, function(err) {
+                            console.log('Something went wrong!', err);
+                        });
+
+                    // Pull the selected track from array
+                    Playlist.findOneAndUpdate({ playlistId: req.params.id}, {
+                        $pull: {
+                            "tracks": {id: playlist.tracks[i].id}
+                        }
+                    }, {new: true}, function(err, updatedPlaylist) {
+                        console.log('updated!', updatedPlaylist);
+
+                        // Push the selected track to new position in array
+                        Playlist.findOneAndUpdate({ playlistId: req.params.id}, {
+                            $push: {
+                                "tracks": {
+                                    $each: [selectedTrack],
+                                    $position: position
+                                }
+                            }
+                        }, {new: true}, function(err, finalPlaylist) {
+                            console.log('final!', finalPlaylist);
+                        })
+                    })
+                }
+            }
+            counter++;
+        }
+        if (counter == playlist.tracks.length || count == playlist.tracks.length) {
+            res.sendStatus(200);
+        }
+    });
 });
 
 module.exports = router;

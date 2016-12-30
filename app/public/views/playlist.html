@@ -37,13 +37,15 @@
         <table class="red lighten-3 col m6 offset-m3 center-align">
             <thead>
                 <tr>
-                    <th>{{name}}:</th>
+                    <th>{{name | uppercase}}:</th>
                 </tr>
             </thead>
             <tbody ui-sortable="sortableOptions" ng-model="playlist">
                 <tr ng-repeat="track in playlist track by $index" class="track" style="cursor: move;">
-                    <td>{{$index}}</td>
+                    <td>{{$index + 1}}</td>
                     <td>{{track.track.name}} by {{track.track.artists[0].name}} <a href="#" ng-click="removeTrack($index, track.track.id)">Remove</a></td>
+                    <td>{{track.votes}} Votes</td>
+                    <td><a href="#" ng-click="addVote(track.track.id)">&#128077;</a></td>
                 </tr>
             </tbody>
 
