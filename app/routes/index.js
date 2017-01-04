@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
 var Playlist = require('../models/playlist');
-const co     = require('co');
+var request = require('request');
+
 
 var SpotifyWebApi = require('spotify-web-api-node');
 
@@ -20,10 +21,7 @@ var isAuthenticated = function (req, res, next) {
 }
 
 router.get('/profile', isAuthenticated, function(req, res, next) {
-    // User.findOne({_id: req.user._id}, function(err, user) {
-    //     if (err) return err;
-    //     res.send(user);
-    // });
+
     var spotifyApi = new SpotifyWebApi({
         accessToken: req.user.accessToken
     });
@@ -86,7 +84,6 @@ router.post('/playlist/create', isAuthenticated, function(req, res) {
                 data.accessCode = playlist.accessCode;
                 res.send(data);
             })
-            res.send(data);
         }, function(err) {
             console.log('Something went wrong!', err);
         });
@@ -102,19 +99,20 @@ router.get('/playlist/:id', isAuthenticated, function(req, res) {
     spotifyApi.getPlaylist(req.user.username, req.params.id)
         .then(function(data) {
             data.username = req.user.username;
-            console.log('Some information about this playlist', data.body);
+
             Playlist.findOne({ playlistId: req.params.id}, function(err, playlist) {
                 if (err) throw err;
                 for (var i = 0; i < playlist.tracks.length; i++) {
                     data.body.tracks.items[i].votes = playlist.tracks[i].votes;
                 }
+                data.body.accessCode = playlist.accessCode;
                 res.send(data.body);
             })
 
         }, function(err) {
             console.log('Something went wrong!', err);
         });
-})
+});
 
 router.post('/playlist/:id', isAuthenticated, function(req, res) {
     var spotifyApi = new SpotifyWebApi({
@@ -160,6 +158,27 @@ router.put('/playlist/:id', isAuthenticated, function(req, res) {
         }, function(err) {
             console.log('Something went wrong!', err);
         });
+
+    // Pull the selected track from array
+    Playlist.findOneAndUpdate({ playlistId: req.params.id}, {
+        $pull: {
+            "tracks": {id: playlist.tracks[i].id}
+        }
+    }, {new: true}, function(err, updatedPlaylist) {
+        console.log('updated!', updatedPlaylist);
+
+        // Push the selected track to new position in array
+        Playlist.findOneAndUpdate({ playlistId: req.params.id}, {
+            $push: {
+                "tracks": {
+                    $each: [selectedTrack],
+                    $position: req.body.destinationPosition
+                }
+            }
+        }, {new: true}, function(err, finalPlaylist) {
+            console.log('final!', finalPlaylist);
+        })
+    })
 });
 
 router.delete('/playlist/:id', isAuthenticated, function(req, res) {
@@ -245,6 +264,9 @@ router.post('/playlist/:id/vote', isAuthenticated, function(req, res) {
                         })
                     })
                 }
+                else {
+                    playlist.save();
+                }
             }
             counter++;
         }
@@ -252,6 +274,73 @@ router.post('/playlist/:id/vote', isAuthenticated, function(req, res) {
             res.sendStatus(200);
         }
     });
+});
+
+router.get('/vote/:id', function(req, res) {
+
+
+    Playlist.findOne({accessCode: req.params.id}, function(err, playlist) {
+        if (err) throw err;
+        console.log('PLAYLIST', playlist);
+
+        User.findOne({ username: playlist.user}, function(err, user) {
+            if (err) throw err;
+
+            console.log('USER', user);
+            var spotifyApi = new SpotifyWebApi({
+                accessToken: user.accessToken
+            });
+
+            spotifyApi.getPlaylist(playlist.user, playlist.playlistId)
+                .then(function(data) {
+                    data.username = playlist.user;
+
+                    for (var i = 0; i < playlist.tracks.length; i++) {
+                        data.body.tracks.items[i].votes = playlist.tracks[i].votes;
+                    }
+
+                    data.body.accessCode = playlist.accessCode;
+
+                    res.send(data.body);
+
+                }, function(err) {
+                    console.log('Something went wrong!', err);
+                })
+        })
+    });
+});
+
+router.get('/me', isAuthenticated, function(req, res) {
+    // var spotifyApi = new SpotifyWebApi({
+    //     accessToken: req.user.accessToken
+    // });
+    //
+    // var options = {
+    //     limit: 50
+    // };
+    //
+    // // Add tracks to a playlist
+    // spotifyApi.getMyTopTracks(options)
+    //     .then(function(data) {
+    //         console.log('Top tracks found!');
+    //         res.send(data);
+    //     }, function(err) {
+    //         console.log('Something went wrong!', err);
+    //     });
+
+    request({
+        url: 'https://api.spotify.com/v1/me/top/tracks',
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer BQBKi9P0avnVgNXcYcM6pf2FFgmYSdB-VeCjpntMLKe-1mBCsCMAkK7F8bzlFD9KmdQPtLTtvyrXtPuAqsb46tbCtDgwUtvxUfINa-MG-RlAhp8GEU0Xdn8Ony8DXrRMZUpT2bFdDsICku_ncSUDjx9SYcAOiBegUVzx1kF4Vv6_La5iTAa-RA1Hctvq2InHroMEHbzHE2kN9DrRSb4_WW7fv84U6lKjCP7seQYTw60pSA'
+        },
+        json: true
+    }, function(err, response, body) {
+        if (err) return done(err);
+        if (!body) return done(null, {message: 'File not found'});
+
+        res.send(body);
+    })
 });
 
 module.exports = router;
