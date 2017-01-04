@@ -16,6 +16,7 @@ angular.module('spotivote')
                 data.tracks.items.forEach(function(track) {
                     $scope.playlist.push(track);
                 })
+                $scope.accessCode = data.accessCode;
                 console.log('items', data.tracks.items);
                 // $scope.playlist = data.body.tracks.items;
                 $scope.name = data.name;
@@ -34,6 +35,8 @@ angular.module('spotivote')
                 {name: 'Playlist', value: 'playlist'}
             ]
 
+            // $scope.results = true;
+
             $scope.search = function(a, b, c) {
                 $scope.searching = false;
                 $http({
@@ -48,6 +51,7 @@ angular.module('spotivote')
                     event.preventDefault();
                     console.log(data);
                     $scope.results = data.body.tracks.items;
+                    console.log('results', $scope.results);
                 })
             }
 
@@ -75,7 +79,7 @@ angular.module('spotivote')
                 }).success(function(data) {
                     event.preventDefault();
                     console.log(data);
-                    $scope.results = '';
+                    // $scope.results = '';
                     $state.go($state.current, {}, {reload: true});
                 })
             }
@@ -90,22 +94,13 @@ angular.module('spotivote')
                 }).success(function(data) {
                     event.preventDefault();
                     console.log(data);
-                    // $http({
-                    //     url: '/playlist/' + $scope.id,
-                    //     method: 'PUT',
-                    //     data: {
-                    //         initialPosition: data,
-                    //         destinationPosition: data - 1
-                    //     }
-                    // }).success(function(data) {
-                    //     event.preventDefault();
-                    //     console.log(data);
-                    //     $scope.results = '';
-                    //     $state.go($state.current, {}, {reload: true});
-                    // })
-                    $scope.results = '';
                     $state.go($state.current, {}, {reload: true});
                 })
+            }
+
+            // View single playlist
+            $scope.goToVote = function(accessCode) {
+                $state.go('vote', {id: accessCode});
             }
 
 
@@ -129,7 +124,6 @@ angular.module('spotivote')
                     }).success(function(data) {
                         event.preventDefault();
                         console.log(data);
-                        $scope.results = '';
                         $state.go($state.current, {}, {reload: true});
                     })
 

@@ -33,7 +33,7 @@ angular.module('spotivote')
                 {name: 'Playlist', value: 'playlist'}
             ]
 
-            // $scope.results = true;
+            $scope.results = [];
 
             $scope.search = function(a, b, c) {
                 $scope.searching = false;
@@ -47,8 +47,11 @@ angular.module('spotivote')
                     }
                 }).success(function(data) {
                     event.preventDefault();
-                    console.log(data);
-                    $scope.results = data.body.tracks.items;
+                    console.log('search!', data);
+                    data.body.tracks.items.forEach(function(track) {
+                        $scope.results.push(track);
+                    })
+                    // $scope.results = data.body.tracks.items;
                     console.log('results', $scope.results);
                 })
             }

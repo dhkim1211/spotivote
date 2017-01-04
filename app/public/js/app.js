@@ -42,5 +42,13 @@ angular.module('spotivote', ['ui.router', 'ui.sortable'])
                     templateUrl: '/views/playlist.html',
                     controller: 'PlaylistCtrl'
                 })
+                .state('vote', {
+                    url: '/playlist/:id/vote',
+                    params: {
+                        id: null
+                    },
+                    templateUrl: '/views/playlistVote.html',
+                    controller: 'VoteCtrl'
+                })
             $locationProvider.html5Mode(true);
         }])

@@ -43,9 +43,8 @@ router.get('/profile', isAuthenticated, function(req, res, next) {
         });
 });
 
-router.post('/search', isAuthenticated, function(req, res) {
+router.post('/search', function(req, res) {
     var spotifyApi = new SpotifyWebApi({
-        accessToken: req.user.accessToken
     });
 
     var query = '';
@@ -115,33 +114,36 @@ router.get('/playlist/:id', isAuthenticated, function(req, res) {
 });
 
 router.post('/playlist/:id', isAuthenticated, function(req, res) {
-    var spotifyApi = new SpotifyWebApi({
-        accessToken: req.user.accessToken
-    });
+    Playlist.findOneAndUpdate({ playlistId: req.params.id}, {
+        $push: {
+            tracks: {
+                id: req.body.track,
+                name: req.body.title,
+                artist: req.body.artist,
+                votes: 0
+            }
+        }
+    }, { new: true }, function(err, playlist) {
+        if (err) throw err;
 
-    var trackToAdd = ['spotify:track:' + req.body.track];
+        User.findOne({username: playlist.user}, function(err, user) {
 
-    // Add tracks to a playlist
-    spotifyApi.addTracksToPlaylist(req.user.username, req.params.id, trackToAdd)
-        .then(function(data) {
-            console.log('Added tracks to playlist!');
-            // Update db
-            Playlist.findOneAndUpdate({ playlistId: req.params.id}, {
-                $push: {
-                    tracks: {
-                        id: req.body.track,
-                        name: req.body.title,
-                        artist: req.body.artist,
-                        votes: 0
-                    }
-                }
-            }, { new: true }, function(err, playlist) {
-                if (err) throw err;
-                res.send(data);
-            })
-        }, function(err) {
-            console.log('Something went wrong!', err);
-        });
+            var spotifyApi = new SpotifyWebApi({
+                accessToken: user.accessToken
+            });
+
+            var trackToAdd = ['spotify:track:' + req.body.track];
+
+            // Add tracks to a playlist
+            spotifyApi.addTracksToPlaylist(user.username, req.params.id, trackToAdd)
+                .then(function(data) {
+                    console.log('Added tracks to playlist!');
+                    res.send(data);
+                }, function(err) {
+                    console.log('Something went wrong!', err);
+                });
+        })
+    })
 });
 
 router.put('/playlist/:id', isAuthenticated, function(req, res) {
@@ -205,74 +207,79 @@ router.delete('/playlist/:id', isAuthenticated, function(req, res) {
         });
 });
 
-router.post('/playlist/:id/vote', isAuthenticated, function(req, res) {
-    var spotifyApi = new SpotifyWebApi({
-        accessToken: req.user.accessToken
-    });
+router.post('/playlist/:id/vote', function(req, res) {
+
 
     Playlist.findOne({ playlistId: req.params.id}, function(err, playlist) {
         if (err) throw err;
 
-        var count = playlist.tracks.length - 1;
-        for (var i = 0; i < 1; i++) {
-            if (playlist.tracks[i].id == req.body.track) {
-                playlist.tracks[i].votes++;
-                playlist.save(function(err) {
-                    if (err) throw err;
-                    count++;
-                })
-            }
-        }
-
-        var counter = 1;
-        for (var i = 1; i < playlist.tracks.length; i++) {
-            if (playlist.tracks[i].id == req.body.track) {
-                playlist.tracks[i].votes++;
-                var selectedTrack = playlist.tracks[i];
-                var position = i - 1;
-
-                // If voted-up track has more votes than previous track, move the track up in playlist position
-                if (playlist.tracks[i].votes > playlist.tracks[i-1].votes) {
-
-                    var options = { "range_length" : 1 };
-
-                    spotifyApi.reorderTracksInPlaylist(req.user.username, req.params.id, i, (i-1), options)
-                        .then(function(data) {
-                            console.log('Tracks reordered in playlist!');
-                        }, function(err) {
-                            console.log('Something went wrong!', err);
-                        });
-
-                    // Pull the selected track from array
-                    Playlist.findOneAndUpdate({ playlistId: req.params.id}, {
-                        $pull: {
-                            "tracks": {id: playlist.tracks[i].id}
-                        }
-                    }, {new: true}, function(err, updatedPlaylist) {
-                        console.log('updated!', updatedPlaylist);
-
-                        // Push the selected track to new position in array
-                        Playlist.findOneAndUpdate({ playlistId: req.params.id}, {
-                            $push: {
-                                "tracks": {
-                                    $each: [selectedTrack],
-                                    $position: position
-                                }
-                            }
-                        }, {new: true}, function(err, finalPlaylist) {
-                            console.log('final!', finalPlaylist);
-                        })
+        User.findOne({ username: playlist.user}, function(err, user) {
+            var count = playlist.tracks.length - 1;
+            for (var i = 0; i < 1; i++) {
+                if (playlist.tracks[i].id == req.body.track) {
+                    playlist.tracks[i].votes++;
+                    playlist.save(function(err) {
+                        if (err) throw err;
+                        count++;
                     })
                 }
-                else {
-                    playlist.save();
-                }
             }
-            counter++;
-        }
-        if (counter == playlist.tracks.length || count == playlist.tracks.length) {
-            res.sendStatus(200);
-        }
+
+            var counter = 1;
+            for (var i = 1; i < playlist.tracks.length; i++) {
+                if (playlist.tracks[i].id == req.body.track) {
+                    playlist.tracks[i].votes++;
+                    var selectedTrack = playlist.tracks[i];
+                    var position = i - 1;
+
+                    // If voted-up track has more votes than previous track, move the track up in playlist position
+                    if (playlist.tracks[i].votes > playlist.tracks[i-1].votes) {
+                        var spotifyApi = new SpotifyWebApi({
+                            accessToken: user.accessToken
+                        });
+
+                        var options = { "range_length" : 1 };
+
+                        spotifyApi.reorderTracksInPlaylist(user.username, req.params.id, i, (i-1), options)
+                            .then(function(data) {
+                                console.log('Tracks reordered in playlist!');
+                            }, function(err) {
+                                console.log('Something went wrong!', err);
+                            });
+
+                        // Pull the selected track from array
+                        Playlist.findOneAndUpdate({ playlistId: req.params.id}, {
+                            $pull: {
+                                "tracks": {id: playlist.tracks[i].id}
+                            }
+                        }, {new: true}, function(err, updatedPlaylist) {
+                            console.log('updated!', updatedPlaylist);
+
+                            // Push the selected track to new position in array
+                            Playlist.findOneAndUpdate({ playlistId: req.params.id}, {
+                                $push: {
+                                    "tracks": {
+                                        $each: [selectedTrack],
+                                        $position: position
+                                    }
+                                }
+                            }, {new: true}, function(err, finalPlaylist) {
+                                console.log('final!', finalPlaylist);
+                            })
+                        })
+                    }
+                    else {
+                        playlist.save();
+                    }
+                }
+                counter++;
+            }
+            if (counter == playlist.tracks.length || count == playlist.tracks.length) {
+                res.sendStatus(200);
+            }
+        })
+
+
     });
 });
 
@@ -311,23 +318,6 @@ router.get('/vote/:id', function(req, res) {
 });
 
 router.get('/me', isAuthenticated, function(req, res) {
-    // var spotifyApi = new SpotifyWebApi({
-    //     accessToken: req.user.accessToken
-    // });
-    //
-    // var options = {
-    //     limit: 50
-    // };
-    //
-    // // Add tracks to a playlist
-    // spotifyApi.getMyTopTracks(options)
-    //     .then(function(data) {
-    //         console.log('Top tracks found!');
-    //         res.send(data);
-    //     }, function(err) {
-    //         console.log('Something went wrong!', err);
-    //     });
-
     request({
         url: 'https://api.spotify.com/v1/me/top/tracks',
         method: 'GET',
