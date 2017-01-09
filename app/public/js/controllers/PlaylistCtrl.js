@@ -35,7 +35,7 @@ angular.module('spotivote')
                 {name: 'Playlist', value: 'playlist'}
             ]
 
-            // $scope.results = true;
+            $scope.results = '';
 
             $scope.search = function(a, b, c) {
                 $scope.searching = false;
