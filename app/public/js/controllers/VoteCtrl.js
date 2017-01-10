@@ -4,6 +4,9 @@ angular.module('spotivote')
             $scope.id = $stateParams.id;
             $scope.username = $stateParams.username;
 
+            $scope.playlist = [];
+
+            // Get playlist
             $http({
                 url: '/vote/' + $scope.id,
                 method: 'GET'
@@ -20,18 +23,8 @@ angular.module('spotivote')
                 $scope.name = data.name;
             })
 
-            // $scope.playlist = list;
-            $scope.playlist = [];
-
+            // Search for songs to add to playlist
             $scope.searching = false;
-            $scope.formData = {artist: '', album: '', track: ''};
-
-            $scope.types = [
-                {name: 'Artist', value: 'artist'},
-                {name: 'Album', value: 'album'},
-                {name: 'Track', value: 'track'},
-                {name: 'Playlist', value: 'playlist'}
-            ]
 
             $scope.results = [];
 
@@ -56,6 +49,7 @@ angular.module('spotivote')
                 })
             }
 
+            // Add track to playlist
             $scope.addTrackToPlaylist = function(trackId, title, artist) {
                 $http({
                     url: '/playlist/' + $scope.playlistId,
@@ -73,18 +67,7 @@ angular.module('spotivote')
                 })
             }
 
-            $scope.removeTrack = function(position, track) {
-                $http({
-                    url: '/playlist/' + $scope.id + '?position=' + position + '&track=' + track + '&snapshot=' + $scope.snapshotId,
-                    method: 'DELETE'
-                }).success(function(data) {
-                    event.preventDefault();
-                    console.log(data);
-                    // $scope.results = '';
-                    $state.go($state.current, {}, {reload: true});
-                })
-            }
-
+            // Add vote to a track
             $scope.addVote = function(track) {
                 $http({
                     url: '/playlist/' + $scope.playlistId + '/vote',
@@ -99,47 +82,36 @@ angular.module('spotivote')
                 })
             }
 
+            // Search for songs in the playlist
+            $scope.playlistResults = [];
+            $scope.keyword = '';
 
-            $scope.song = '';
-            // set up sortable options
-            $scope.sortableOptions = {
-                stop: function(e, ui) {
-                    console.log('item', ui);
-                    console.log('itemIndex', ui.item.index());
-                    console.log('playlist', $scope.playlist);
-                    var originalIndex = ui.item.index();
-                    var newIndex = ui.item.sortable.dropindex;
+            function escapeRegExp(string){
+                return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+            }
 
-                    $http({
-                        url: '/playlist/' + $scope.id,
-                        method: 'PUT',
-                        data: {
-                            initialPosition: originalIndex,
-                            destinationPosition: newIndex
-                        }
-                    }).success(function(data) {
-                        event.preventDefault();
-                        console.log(data);
-                        $state.go($state.current, {}, {reload: true});
-                    })
+            var regex;
 
-                    console.log('sortable', ui.item.sortable.index);
-                    console.log('drop', ui.item.sortable.dropindex);
-                },
-                sort: function(e, ui) {
-                    // console.log('sort');
-                    // console.log('sortable', ui.item.sortable.index);
-                },
-                start: function(e, ui) {
-                    // var songTitle = ui.item[0].outerText.split("  ");
-                    // console.log('songTitle', songTitle);
-                    // songTitle = songTitle.toString().split("by");
-                    // $scope.song = songTitle[0];
-                    // console.log('song', $scope.song);
-                },
-                update: function(e, ui) {
+            $scope.$watch('keyword', function (newValue, oldValue) {
+                regex = new RegExp('\\b' + escapeRegExp(newValue), 'i');
+                if (!newValue) {
+                    $scope.playlistResults = [];
                 }
-            };
+            });
 
+            $scope.searchPlaylist = function(keyword) {
+
+                if (!$scope.keyword) {
+                    $scope.playlistResults = [];
+                }
+
+                $scope.playlistResults = [];
+
+                for (var i = 0; i < $scope.playlist.length; i++) {
+                    if ( (regex.test($scope.playlist[i].track.artists[0].name)) || ( regex.test($scope.playlist[i].track.name))) {
+                        $scope.playlistResults.push($scope.playlist[i]);
+                    }
+                }
+            }
 
         }]);
