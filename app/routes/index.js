@@ -161,26 +161,32 @@ router.put('/playlist/:id', isAuthenticated, function(req, res) {
             console.log('Something went wrong!', err);
         });
 
-    // Pull the selected track from array
-    Playlist.findOneAndUpdate({ playlistId: req.params.id}, {
-        $pull: {
-            "tracks": {id: playlist.tracks[i].id}
-        }
-    }, {new: true}, function(err, updatedPlaylist) {
-        console.log('updated!', updatedPlaylist);
+    Playlist.findOne({ playlistId: req.params.id }, function(err, playlist) {
 
-        // Push the selected track to new position in array
+        var track = playlist.tracks[req.body.initialPosition];
+
+        // Pull the selected track from array
         Playlist.findOneAndUpdate({ playlistId: req.params.id}, {
-            $push: {
-                "tracks": {
-                    $each: [selectedTrack],
-                    $position: req.body.destinationPosition
-                }
+            $pull: {
+                "tracks": {id: req.body.track}
             }
-        }, {new: true}, function(err, finalPlaylist) {
-            console.log('final!', finalPlaylist);
+        }, {new: true}, function(err, updatedPlaylist) {
+            console.log('updated!', updatedPlaylist);
+
+            // Push the selected track to new position in array
+            Playlist.findOneAndUpdate({ playlistId: req.params.id}, {
+                $push: {
+                    "tracks": {
+                        $each: [track],
+                        $position: req.body.destinationPosition
+                    }
+                }
+            }, {new: true}, function(err, finalPlaylist) {
+                console.log('final!', finalPlaylist);
+            })
         })
     })
+
 });
 
 router.delete('/playlist/:id', isAuthenticated, function(req, res) {
