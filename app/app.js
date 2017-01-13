@@ -4,6 +4,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var request = require('request');
 
 var app = express();
 
@@ -68,5 +69,71 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+// Cron job to check for expiring access tokens
+var User = require('./models/user');
+
+var CronJob = require('cron').CronJob;
+
+var job = new CronJob('00 * * * * 0-6', function() {
+
+    var now = new Date();
+    var updateBefore = now.setMinutes(now.getMinutes() - 0);
+    var updateAfter = now.setMinutes(now.getMinutes() - 200);
+
+    var twentyMinAgo = new Date(updateBefore).toISOString();
+    var hourAgo = new Date(updateAfter).toISOString();
+
+    var hour = now.setMinutes(now.getMinutes() - 50);
+    var hourOneMin = now.setMinutes(now.getMinutes() - 100);
+    var oneHourAgo = new Date(hour).toISOString();
+    var hourFiveMin = new Date(hourOneMin).toISOString();
+
+    var encodeThis = 'f0b91b941abc45beb58d907a1dc4517f:dd64d7d93409421484d807c5ffc17678';
+    var buffer = new Buffer(encodeThis);
+    var toBase64 = buffer.toString('base64');
+
+    User.find({
+        updatedAt: {$gt: [hourAgo], $lt: [twentyMinAgo]}
+    }, function(err, users) {
+        console.log('users!!', users);
+        users.forEach(function(user) {
+            console.log('user', user);
+            console.log('successAt', now);
+            request({
+                url: 'https://accounts.spotify.com/api/token',
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Basic ' + toBase64
+                },
+                form: {
+                    grant_type: 'refresh_token',
+                    refresh_token: user.refreshToken
+                }
+            }, function(err, response, body) {
+                if (err) throw err;
+                console.log('body', body);
+
+                User.findOneAndUpdate({ username: user.username}, {
+                    $set: {
+                        accessToken: body.access_token,
+                        refreshToken: body.refresh_token
+                    }
+                });
+            })
+      })
+    })
+
+    }, function () {
+        console.log('Access tokens updated!');
+      /* This function is executed when the job stops */
+    },
+    true, /* Start the job right now */
+    'America/Los_Angeles' /* Time zone of this job. */
+);
+
+job.start();
+
+console.log('job status', job.running);
 
 module.exports = app;
