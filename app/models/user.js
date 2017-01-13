@@ -17,24 +17,14 @@ var userSchema = new Schema({
     email: String,
     accessToken: String,
     refreshToken: String,
+    expiresIn: Number,
     createdAt: Date,
     updatedAt: Date
+}, {
+    timestamps: true,
+    versionKey: false
 });
 
-// on every save, add the date
-userSchema.pre('save', function(next) {
-    // get the current date
-    var currentDate = new Date();
-
-    // change the updated_at field to current date
-    this.updatedAt = currentDate;
-
-    // if created_at doesn't exist, add to that field
-    if (!this.createdAt)
-        this.createdAt = currentDate;
-
-    next();
-});
 
 var User = mongoose.model('User', userSchema);
 
