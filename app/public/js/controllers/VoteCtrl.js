@@ -1,10 +1,15 @@
 angular.module('spotivote')
-    .controller('VoteCtrl', ['$scope', '$http', '$location', '$stateParams', '$state',
-        function($scope, $http, $location, $stateParams, $state) {
+    .controller('VoteCtrl', ['$scope', '$http', '$location', '$stateParams', '$state', '$localStorage','$sessionStorage', '$window',
+        function($scope, $http, $location, $stateParams, $state, $localStorage, $sessionStorage, $window) {
             $scope.id = $stateParams.id;
             $scope.username = $stateParams.username;
 
             $scope.playlist = [];
+
+            // Store user's voted songs in local storage
+            $scope.$storage = $localStorage.$default({
+               votedTracks: []
+            });
 
             // Get playlist
             $http({
@@ -15,11 +20,13 @@ angular.module('spotivote')
                 console.log(data);
                 $scope.snapshotId = data.snapshot_id;
                 data.tracks.items.forEach(function(track) {
+                    if ($scope.$storage.votedTracks.indexOf(track.track.id) > -1) {
+                        track.alreadyVoted = true;
+                    }
                     $scope.playlist.push(track);
                 })
                 $scope.accessCode = data.accessCode;
                 $scope.playlistId = data.id;
-                console.log('items', data.tracks.items);
                 $scope.name = data.name;
             })
 
@@ -50,14 +57,15 @@ angular.module('spotivote')
             }
 
             // Add track to playlist
-            $scope.addTrackToPlaylist = function(trackId, title, artist) {
+            $scope.addTrackToPlaylist = function(uri, trackId, title, artist) {
                 $http({
                     url: '/playlist/' + $scope.playlistId,
                     method: 'POST',
                     data: {
-                        track: trackId,
+                        uri: uri,
                         title: title,
-                        artist: artist
+                        artist: artist,
+                        track: trackId
                     }
                 }).success(function(data) {
                     event.preventDefault();
@@ -67,19 +75,29 @@ angular.module('spotivote')
                 })
             }
 
+            $scope.trackAdded = false;
             // Add vote to a track
             $scope.addVote = function(track) {
-                $http({
-                    url: '/playlist/' + $scope.playlistId + '/vote',
-                    method: 'POST',
-                    data: {
-                        track: track
-                    }
-                }).success(function(data) {
-                    event.preventDefault();
-                    console.log(data);
-                    $state.go($state.current, {}, {reload: true});
-                })
+
+                if ($scope.$storage.votedTracks.indexOf(track) > -1) {
+                    $window.alert("You've already voted for this track!");
+                    $state.go($state.current);
+                }
+                else {
+                    $scope.$storage.votedTracks.push(track);
+                    $http({
+                        url: '/playlist/' + $scope.playlistId + '/vote',
+                        method: 'POST',
+                        data: {
+                            track: track
+                        }
+                    }).success(function(data) {
+                        event.preventDefault();
+                        console.log(data);
+                        $state.go($state.current, {}, {reload: true});
+                    })
+                }
+
             }
 
             // Search for songs in the playlist
