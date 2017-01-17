@@ -9,8 +9,9 @@
     <!-- CSS -->
     <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">-->
-    <link rel="stylesheet" href="/css/style.css"> <!-- custom styles -->
+    <link rel="stylesheet" href="/stylesheets/style.css"> <!-- custom styles -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <!-- JS -->
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
@@ -23,22 +24,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.7/angular-resource.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-materialize/0.1.9/angular-materialize.min.js"></script>
     <script src="../javascripts/sortable.js"></script>
+    <script type="text/javascript" src="//monospaced.github.io/bower-qrcode-generator/js/qrcode.js"></script>
+    <script type="text/javascript" src="//monospaced.github.io/bower-qrcode-generator/js/qrcode_UTF8.js"></script>
+    <script type="text/javascript" src="//monospaced.github.io/angular-qrcode/angular-qrcode.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.6/ngStorage.min.js"></script>
 
 </head>
 <body ng-app="spotivote" ng-controller="MainCtrl">
 <!-- NAVBAR -->
 <!-- HEADER -->
-<nav role="navigation" class="grey darken-4">
+<nav role="navigation" class="grey darken-4" ng-hide="state.$current.hideNavbar">
     <div class="nav-wrapper container">
+        <a href="/"><img class="logo" src="./images/logo.png"></a>
         <ul class="right hide-on-med-and-down">
-            <li><a href="/register" class="navlink">Register</a></li>
-            <li><a href="/login" class="navlink">Login</a></li>
+            <li ng-hide="state.$current.hideLogin"><a href="/login" class="navlink">Login</a></li>
             <li><a href="/profile" class="navlink">Profile</a></li>
-            <li><a href="/search" class="navlink">Search</a></li>
+            <li ng-show="state.$current.hideLogin"><a href="#" class="navlink" ng-click="logout()">Logout</a></li>
+
         </ul>
-        <ul id="nav-mobile" class="side-nav red lighten-2">
-            <li><a href="/register" class="navlink">Register</a></li>
-            <li><a href="/login" class="navlink">Login</a></li>
+        <ul id="nav-mobile" class="side-nav grey darken-4">
+            <li ng-hide="state.$current.hideLogin"><a href="/login" class="navlink">Login</a></li>
             <li><a href="/profile" class="navlink">Profile</a></li>
         </ul>
         <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
@@ -48,12 +53,18 @@
 <!-- ANGULAR DYNAMIC CONTENT -->
 <div ui-view></div>
 
+<div class="center-align">
+    <p>Powered By Spotify</p>
+</div>
+
 <script src="/js/app.js"></script>
 <script src="/js/services/services.js"></script>
 <script src="/js/controllers/MainCtrl.js"></script>
 <script src="/js/controllers/ProfileCtrl.js"></script>
 <script src="/js/controllers/SearchCtrl.js"></script>
 <script src="/js/controllers/PlaylistCtrl.js"></script>
+<script src="/js/controllers/VoteCtrl.js"></script>
+<script src="/js/filters/formatMS.js"></script>
 
 <script>
     $(document).ready(function(){
