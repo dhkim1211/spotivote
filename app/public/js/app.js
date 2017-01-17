@@ -1,4 +1,4 @@
-angular.module('spotivote', ['ui.router', 'ui.sortable'])
+angular.module('spotivote', ['ui.router', 'ui.sortable', 'ui.materialize', 'monospaced.qrcode', 'ngStorage'])
     .config(['$stateProvider', '$urlRouterProvider', '$locationProvider',
         function($stateProvider, $urlRouterProvider, $locationProvider) {
             $stateProvider
@@ -12,10 +12,8 @@ angular.module('spotivote', ['ui.router', 'ui.sortable'])
                     templateUrl:'/views/login.html',
                     controller: 'MainCtrl'
                 })
-                .state('register', {
-                    url: '/register',
-                    templateUrl:'/views/register.html',
-                    controller: 'MainCtrl'
+                .state('logout', {
+                    url: '/auth/logout'
                 })
                 .state('spotify', {
                     url: '/auth/spotify',
@@ -26,29 +24,27 @@ angular.module('spotivote', ['ui.router', 'ui.sortable'])
                 .state('profile', {
                     url: '/profile',
                     templateUrl: '/views/profile.html',
-                    controller: 'ProfileCtrl'
-                })
-                .state('search', {
-                    url: '/search',
-                    templateUrl: '/views/search.html',
-                    controller: 'SearchCtrl'
+                    controller: 'ProfileCtrl',
+                    hideLogin: true
                 })
                 .state('playlist', {
-                    url: '/playlist/:id',
+                    url: '/:id',
                     params: {
                         id: null,
                         username: null
                     },
                     templateUrl: '/views/playlist.html',
-                    controller: 'PlaylistCtrl'
+                    controller: 'PlaylistCtrl',
+                    hideLogin: true
                 })
                 .state('vote', {
-                    url: '/playlist/:id/vote',
+                    url: '/:id/vote',
                     params: {
                         id: null
                     },
                     templateUrl: '/views/playlistVote.html',
-                    controller: 'VoteCtrl'
+                    controller: 'VoteCtrl',
+                    hideNavbar: true
                 })
             $locationProvider.html5Mode(true);
         }])
