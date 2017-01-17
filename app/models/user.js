@@ -17,7 +17,6 @@ var userSchema = new Schema({
     email: String,
     accessToken: String,
     refreshToken: String,
-    expiresIn: Number,
     createdAt: Date,
     updatedAt: Date
 }, {
