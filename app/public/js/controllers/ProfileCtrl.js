@@ -6,10 +6,16 @@ angular.module('spotivote')
                 url: '/profile',
                 method: 'GET'
             }).success(function(data) {
+                if (!data.user) {
+                    $state.go('login');
+                }
+                if (!data.playlists) {
+                    $scope.noPlaylists = true;
+                }
                 event.preventDefault();
                 console.log(data)
                 $scope.profile = data.user;
-                $scope.playlists = data.playlists.items;
+                $scope.playlists = data.playlists;
             })
 
             $scope.name = '';
