@@ -1,65 +1,75 @@
 <div class="col m12" ng-controller="PlaylistCtrl">
     <div class="row">
-        <div class="card red lighten-3 col m6 offset-m3 center-align">
-            <h3>PLAYLIST</h3>
-            <h3><a href="#" ng-click="goToVote(accessCode)">{{accessCode}}</a></h3>
+        <div class="col m8 offset-m2 col s12 center-align">
+            <h3>PLAYLIST: {{name | uppercase}}</h3>
+            <h3><a class="spotifyGreenText" href="#" ng-click="goToVote(accessCode)">{{accessCode}}</a></h3>
+            <qrcode size="200" data="http://localhost:3000/playlist/{{accessCode}}/vote" download></qrcode>
+            <p>Enter {{accessCode}} at Spotivote.com <br>OR<br>Use the QR Code above to add and vote for songs in this playlist!</p>
         </div>
     </div>
     <div class="row">
         <div class="center-align" ng-hide="searching">
-            <button class="btn center-align" ng-click="searching = true">Add Songs To Playlist</button>
+            <button class="btn spotifyGreen center-align" ng-click="searching = true">Add Songs To Playlist</button>
         </div>
     </div>
     <div class="row" ng-show="searching">
-        <div class="col s8 offset-s2">
+        <div class="col m8 offset-m2 col s12">
             <form>
                 <div class="row center-align">
-                    <div class="input-field col s4 offset-s2">
+                    <div class="input-field col s10 offset-s1 col m6 offset-m3 ">
                         <input class="form-control login center-align", type="text", name="artist", ng-model="formData.artist", placeholder="Artist", required, autofocus>
                     </div>
-                    <div class="input-field col s4">
+                </div>
+                <div class="row center-align">
+                    <div class="input-field col s10 offset-s1 col m6 offset-m3 ">
                         <input class="form-control login center-align", type="text", name="track", ng-model="formData.track", placeholder="Song", required, autofocus>
                     </div>
                 </div>
                 <div class="center-align">
-                    <button class="btn green accent-4center-align" type="submit" value="submit" ng-click="search(formData.artist, formData.album, formData.track)">Search</button>
-                    <button class="btn red lighten-2 center-align" ng-click="searching = false">Cancel</button>
+                    <button class="btn spotifyGreen center-align" type="submit" value="submit" ng-click="search(formData.artist, formData.album, formData.track)">Search</button>
+                    <button class="btn grey darken-4 center-align" ng-click="searching = false">Cancel</button>
                 </div>
             </form>
         </div>
     </div>
     <div class="row">
-        <div class="card yellow lighten-3 col s8 offset-s2" ng-show="results">
-            <a class="exitIcon" style="margin-left: 100%" ng-click="results = false" href="#">&#10006;</a>
-            <h1>Results:</h1>
+        <div class="card grey darken-4 col m8 offset-m2 col s12" ng-show="results">
+            <a class="exitIcon" style="margin-left: 99%" ng-click="results = false" href="#"><i class="fa fa-times fa-lg" aria-hidden="true"></i></a>
             <table>
                 <tbody>
                 <tr ng-repeat="result in results | orderBy: 'popularity'">
                     <td><img style="width: 30px;" src="{{result.album.images[0].url}}"></td>
                     <td>{{result.name}} - {{result.artists[0].name}}</td>
-                    <td><a href="#" ng-click="addTrackToPlaylist(result.id, result.name, result.artists[0].name)">Add To Playlist</a></td>
+                    <td><a href="#" ng-click="addTrackToPlaylist(result.uri, result.id, result.name, result.artists[0].name)" message="{{result.name}} by {{result.artists[0].name}} Added!" duration="1000" toast="click"><i class="fa fa-plus fa-lg" aria-hidden="true"></i></a></td>
                 </tr>
                 </tbody>
             </table>
         </div>
     </div>
-    <div class="row">
-        <table class="red lighten-3 col m10 offset-m1 center-align">
+    <div class="row center-align">
+        <table class="grey darken-4 col m10 offset-m1 col s12 center-align">
             <thead>
                 <tr>
-                    <th>{{name | uppercase}}:</th>
+                    <th>#</th>
+                    <th></th>
+                    <th>Song</th>
+                    <th>Artist</th>
+                    <th><i class="fa fa-clock-o" aria-hidden="true"></i></th>
+                    <th>Votes</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody ui-sortable="sortableOptions" ng-model="playlist">
-                <tr ng-repeat="track in playlist track by $index" class="track" style="cursor: move;">
+                <tr ng-repeat="track in playlist track by $index" class="tracklist" style="cursor: move;">
                     <td>{{$index + 1}}</td>
-                    <td><img style="height:30px" src="{{track.track.album.images[0].url}}"></td>
-                    <td>{{track.track.name}} by {{track.track.artists[0].name}} <a href="#" ng-click="removeTrack($index, track.track.id)">Remove</a></td>
+                    <td><img style="width:30px" src="{{track.track.album.images[0].url}}"></td>
+                    <td><a href="#" ng-click="preview(track.track.preview_url)">{{track.track.name}}</a></td>
+                    <td>{{track.track.artists[0].name}}</td>
+                    <td>{{track.track.duration_ms | formatMS}}</td>
                     <td>{{track.votes}} Votes</td>
+                    <td><a href="#" class="remove" ng-click="removeTrack($index, track.track.id)">Remove</a></td>
                 </tr>
             </tbody>
-
-            <hr>
         </table>
     </div>
     <!--<div class="row card red lighten-3 col m6 offset-m3 center-align">-->

@@ -35,16 +35,16 @@
 <!-- HEADER -->
 <nav role="navigation" class="grey darken-4" ng-hide="state.$current.hideNavbar">
     <div class="nav-wrapper container">
-        <a href="/"><img class="logo" src="./images/logo.png"></a>
+        <a href="#"><img class="logo" src="./images/logo.png"></a>
         <ul class="right hide-on-med-and-down">
-            <li ng-hide="state.$current.hideLogin"><a href="/login" class="navlink">Login</a></li>
-            <li><a href="/profile" class="navlink">Profile</a></li>
+            <li ng-show="state.$current.hideLogin"><a href="/me" class="navlink">Profile</a></li>
             <li ng-show="state.$current.hideLogin"><a href="#" class="navlink" ng-click="logout()">Logout</a></li>
-
+            <li ng-hide="state.$current.hideLogin"><a href="/login" class="navlink">Login</a></li>
         </ul>
         <ul id="nav-mobile" class="side-nav grey darken-4">
             <li ng-hide="state.$current.hideLogin"><a href="/login" class="navlink">Login</a></li>
-            <li><a href="/profile" class="navlink">Profile</a></li>
+            <li ng-show="state.$current.hideLogin"><a href="#" class="navlink" ng-click="logout()">Logout</a></li>
+            <li ng-show="state.$current.hideLogin"><a href="/profile" class="navlink">Profile</a></li>
         </ul>
         <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
     </div>

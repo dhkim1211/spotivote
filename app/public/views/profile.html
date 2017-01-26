@@ -1,34 +1,60 @@
 <div class="col m12" ng-controller="ProfileCtrl">
     <div class="row">
-        <div class="card red lighten-3 col m6 offset-m3 center-align">
+        <div class="col m6 offset-m3 center-align">
             <h3>Hey {{profile.id}}!</h3>
         </div>
     </div>
     <div class="row">
-        <div class="center-align">
-            <button class="btn center-align" ng-click="create = true">Create A Playlist</button>
+        <div class="center-align" ng-hide="create">
+            <button class="btn spotifyGreen center-align" ng-click="create = true">Create A New Playlist</button>
         </div>
     </div>
-    <div class="row" ng-if="create">
+    <div class="row" ng-show="create">
         <div class="col s8 offset-s2 m4 offset-m4">
             <div class="input-field">
-                <form class="form-signin login">
+                <form class="form-signin login center-align">
                     <input class="form-control login center-align", type="text", name="playlistName", ng-model="name", placeholder="Enter Playlist Name", required, autofocus>
-                    <button class="btn center-align" ng-click="createPlaylist(name)">Create Playlist</button>
+                    <button class="btn spotifyGreen center-align" ng-click="createPlaylist(name)">Create Playlist</button>
                 </form>
             </div>
         </div>
     </div>
+    <!--<div class="row">-->
+        <!--<div class="grey darken-4 col m10 offset-m1 center-align playlistOverview col s12" ng-if="!noPlaylists">-->
+            <!--<div ng-repeat="playlist in playlists" class="center-align">-->
+                <!--<div class="col m4">-->
+                    <!--<ul>-->
+                        <!--<li class="albums"><a href="#" ng-click="viewPlaylist(playlist.id, playlist.owner.id)" >{{playlist.name | uppercase }}</a></li>-->
+                        <!--<li class="albums">{{playlist.tracks.total}} Tracks</li>-->
+                        <!--<li class="albums"><a href="#" ng-click="viewPlaylist(playlist.id, playlist.owner.id)"><img style="width: 150px" src="{{playlist.images[0].url}}"></a></li>-->
+                    <!--</ul>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="grey darken-4 col m10 offset-m1 center-align playlistOverview" ng-if="noPlaylists">-->
+            <!--<div class="col m8 offset-m2">-->
+                <!--<h6>Click on the button above to create a new Spotivote playlist!</h6>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+
     <div class="row">
-        <div class="card red lighten-3 col m6 offset-m3 center-align">
-            <h3>Here are your playlists:</h3>
-            <div ng-repeat="playlist in playlists">
-                <ul>
-                    <li><a href="#" ng-click="viewPlaylist(playlist.id, playlist.owner.id)" >{{playlist.name}}</a></li>
-                    <li>{{playlist.tracks.total}} Tracks</li>
-                    <li>{{playlist.id}}</li>
-                    <li><img style="width: 50px" src="{{playlist.images[0].url}}"></li>
-                </ul>
+        <div class="grey darken-4 col m10 offset-m1 center-align playlistOverview col s12" ng-if="!noPlaylists">
+            <div ng-repeat="playlist in playlists" class="center-align">
+                <a href="#">
+                    <div class="col l3 m4 col s6 albumCover albumContainer" ng-click="viewPlaylist(playlist.id, playlist.owner.id)">
+                        <img ng-if="playlist.images[0].url" style="width:100%" src="{{playlist.images[0].url}}">
+                        <img ng-if="!playlist.images[0].url" style="width:100%" src="http://orig14.deviantart.net/5162/f/2014/153/9/e/no_album_art__no_cover___placeholder_picture_by_cmdrobot-d7kpm65.jpg">
+                        <a href="#" ng-click="viewPlaylist(playlist.id, playlist.owner.id)">
+                            <h6 class="albumLayover"><span>{{playlist.name | uppercase }}<span class='spacer'></span><br /><span class='spacer'></span><span class="smallFont">{{playlist.tracks.total}} Tracks</span></span></h6>
+                        </a>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="grey darken-4 col m10 offset-m1 center-align playlistOverview" ng-if="noPlaylists">
+            <div class="col m8 offset-m2">
+                <h6>Click on the button above to create a new Spotivote playlist!</h6>
             </div>
         </div>
     </div>
