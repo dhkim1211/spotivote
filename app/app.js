@@ -27,11 +27,6 @@ initPassport(passport);
 var index = require('./routes/index');
 var auth = require('./routes/auth');
 
-//TODO delete
-// // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
@@ -43,9 +38,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/auth', auth);
 app.use('/', index);
 
-app.get('/auth/*', function(req, res) {
-    res.render('index');
-})
 // send angular page for * to enable html5mode (routing through angular)
 app.get('/*', function(req, res) {
   console.log('hit get /*/')

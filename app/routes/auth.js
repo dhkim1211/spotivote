@@ -20,7 +20,7 @@ router.get('/spotify', passport.authenticate('spotify', {scope: ['user-read-emai
     function(req, res){
     });
 
-router.get('/spotify/callback/', passport.authenticate('spotify', { failureRedirect: '/login' , successRedirect: '/'}),
+router.get('/spotify/callback/', passport.authenticate('spotify', { failureRedirect: '/login' , successRedirect: '/me'}),
     function(req, res) {
         // res.redirect('/profile/' + req.user.id);
         // res.redirect('/');

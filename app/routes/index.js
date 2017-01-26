@@ -321,7 +321,7 @@ router.get('/vote/:id', function(req, res) {
     })
 });
 
-router.get('/me', isAuthenticated, function(req, res) {
+router.get('/me/toptracks', isAuthenticated, function(req, res) {
     request({
         url: 'https://api.spotify.com/v1/me/top/tracks',
         method: 'GET',
