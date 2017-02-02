@@ -1,8 +1,128 @@
 body {
-  padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  color: white !important;
+  background: #424242;
 }
 
 a {
-  color: #00B7FF;
+  color: white !important;
 }
+
+a:hover {
+  font-weight: bold;
+}
+
+tr {
+  border-bottom: 1px solid gray;
+}
+
+.spotifyGreen {
+  background: #2EBD59 !important;
+}
+
+.spotifyGreenText {
+  color: #2EBD59 !important;
+}
+
+i:hover {
+  color: #2EBD59;
+}
+
+/*a.remove:hover {*/
+  /*color: #e57373 !important;*/
+/*}*/
+
+.playlistOverview {
+  padding: 30px !important;
+}
+
+td, th {
+  padding: 20px !important;
+}
+
+.logo {
+  margin-top: 18px;
+  margin-right: 100px;
+  height: 30px;
+}
+
+.logoBig {
+  width: 300px;
+  margin-bottom: -20px;
+}
+
+.logoDiv {
+  margin: 50px 0 30px 0;
+}
+
+thead {
+  border-bottom: 1px solid gray !important;
+}
+
+.input-field input[type=text]:focus {
+  border-bottom: 1px solid #2EBD59 !important;
+  box-shadow: 0 1px 0 0 #2EBD59 !important;
+}
+
+.startParty {
+  margin-top: 20px;
+}
+
+.whiteBG {
+  background: #000 !important;
+}
+
+.voteView {
+  padding-top: 50px;
+}
+
+tr.tracklist:hover {
+  background: #323232 !important;
+}
+
+table {
+  border: 1px solid gray;
+}
+
+li.albums {
+  margin: 5px;
+}
+
+.playlistView {
+  height: 250px;
+}
+
+.albumCover {
+  position: relative;
+  width: 100%; /* for IE 6 */
+}
+
+.albumLayover {
+  position: absolute;
+  bottom: 28%;
+  left: 0;
+  width: 100%;
+  font-size: 80%;
+}
+
+.albumLayover span {
+  color: white;
+  font: bold 24px/45px Helvetica, Sans-Serif;
+  letter-spacing: -1px;
+  background: rgb(0, 0, 0); /* fallback color */
+  background: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+}
+
+.albumLayover span.spacer {
+  padding:0 5px;
+}
+
+.albumContainer {
+  margin: 12px 0;
+}
+
+.albumLayover span.smallFont {
+  font-size: 70%;
+}
+
