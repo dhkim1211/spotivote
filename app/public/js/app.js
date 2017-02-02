@@ -22,7 +22,7 @@ angular.module('spotivote', ['ui.router', 'ui.sortable', 'ui.materialize', 'mono
                     }
                 })
                 .state('profile', {
-                    url: '/profile',
+                    url: '/me',
                     templateUrl: '/views/profile.html',
                     controller: 'ProfileCtrl',
                     hideLogin: true

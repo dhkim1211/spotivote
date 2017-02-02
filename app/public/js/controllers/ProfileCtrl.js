@@ -14,7 +14,7 @@ angular.module('spotivote')
                 }
                 event.preventDefault();
                 console.log(data)
-                $scope.profile = data.user;
+                $scope.username = data.user;
                 $scope.playlists = data.playlists;
             })
 
