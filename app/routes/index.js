@@ -24,39 +24,31 @@ router.get('/profile', isAuthenticated, function(req, res, next) {
         accessToken: req.user.accessToken
     });
 
-    spotifyApi.getUser(req.user.username)
-        .then(function(user) {
+    var results = [];
+    var counter = 0;
 
-            var results = [];
-            var counter = 0;
+    Playlist.find({ user: req.user.username }, function(err, dbPlaylist) {
+        if (dbPlaylist.length < 1) {
+            res.send({'user': user.body});
+        }
+        dbPlaylist.forEach(function(playlist) {
+            spotifyApi.getPlaylist(req.user.username, playlist.playlistId)
+                .then(function(data) {
+                    results.push(data.body);
+                    counter++;
+                    if (counter == dbPlaylist.length) {
+                        var profile = {'user': req.user.username, 'playlists': results}
+                        res.send(profile);
+                    }
+                }, function(err) {
+                    console.log('Something went wrong!', err);
+                });
+        })
+    })
 
-            Playlist.find({ user: user.body.id }, function(err, dbPlaylist) {
-                if (dbPlaylist.length < 1) {
-                    res.send({'user': user.body});
-                }
-                dbPlaylist.forEach(function(playlist) {
-                    spotifyApi.getPlaylist(req.user.username, playlist.playlistId)
-                        .then(function(data) {
-                            results.push(data.body);
-                            counter++;
-                            if (counter == dbPlaylist.length) {
-                                var profile = {'user': user.body, 'playlists': results}
-                                res.send(profile);
-                            }
-                        }, function(err) {
-                            console.log('Something went wrong!', err);
-                        });
-                })
-
-            })
-        }, function(err) {
-            console.log('Something went wrong!', err);
-        });
 });
 
 router.post('/search', function(req, res) {
-    var spotifyApi = new SpotifyWebApi({
-    });
 
     var query = '';
 
