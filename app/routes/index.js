@@ -7,9 +7,9 @@ var SpotifyWebApi = require('spotify-web-api-node');
 
 // credentials are optional
 var spotifyApi = new SpotifyWebApi({
-    clientId : 'f0b91b941abc45beb58d907a1dc4517f',
-    clientSecret : 'dd64d7d93409421484d807c5ffc17678',
-    redirectUri : 'http://localhost:3000/callback'
+    clientId : process.env.SPOTIFY_CLIENTID,
+    clientSecret : process.env.SPOTIFY_CLIENTSECRET,
+    redirectUri : process.env.SPOTIFY_CALLBACK_URL
 });
 
 var isAuthenticated = function (req, res, next) {

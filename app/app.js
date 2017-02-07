@@ -8,9 +8,17 @@ var request = require('request');
 
 var app = express();
 
+// load .env file
+var envFilePath = (typeof process.env.NODE_ENV !== 'undefined') ? `${process.env.NODE_ENV}.env` : '.env';
+try {
+    require('dotenv').config({
+        path: `./${envFilePath}`
+    })
+} catch (e) {}
+
 var mongoose = require('mongoose');
 //connect to db
-mongoose.connect('mongodb://localhost:27017/spotivote');
+mongoose.connect(process.env.MONGOOSE_CONNECT);
 
 var session = require('express-session');
 var passport = require('passport');
