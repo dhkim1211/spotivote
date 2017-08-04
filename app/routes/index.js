@@ -18,6 +18,36 @@ var isAuthenticated = function (req, res, next) {
     res.redirect('/login');
 }
 
+var refreshToken = function (username, refreshToken) {
+    var encodeThis = process.env.SPOTIFY_CLIENTID + ':' + process.env.SPOTIFY_CLIENTSECRET;
+    var buffer = new Buffer(encodeThis);
+    var toBase64 = buffer.toString('base64');
+
+    request({
+        url: 'https://accounts.spotify.com/api/token',
+        method: 'POST',
+        headers: {
+            'Authorization': 'Basic ' + toBase64
+        },
+        form: {
+            grant_type: 'refresh_token',
+            refresh_token: refreshToken
+        }
+    }, function(err, response, body) {
+        if (err) throw err;
+        console.log('body', body);
+
+        User.findOneAndUpdate({ username: username}, {
+            $set: {
+                accessToken: body.access_token,
+                refreshToken: body.refresh_token
+            }
+        }, function(err, user) {
+            return body.access_token;
+        });
+    })
+}
+
 router.get('/profile', isAuthenticated, function(req, res, next) {
 
     var spotifyApi = new SpotifyWebApi({

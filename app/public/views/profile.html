@@ -40,7 +40,7 @@
 
     <div class="row">
         <div class="grey darken-4 col m10 offset-m1 center-align playlistOverview col s12" ng-if="!noPlaylists">
-            <div ng-repeat="playlist in playlists" class="center-align">
+            <div ng-repeat="playlist in playlists | orderBy: 'name'" class="center-align">
                 <a href="#">
                     <div class="col l3 m4 col s6 albumCover albumContainer" ng-click="viewPlaylist(playlist.id, playlist.owner.id)">
                         <img ng-if="playlist.images[0].url" style="width:100%" src="{{playlist.images[0].url}}">

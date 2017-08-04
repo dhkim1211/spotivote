@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "bcrypt": "^1.0.1",
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "~1.15.2",
     "co": "^4.6.0",
     "cookie-parser": "~1.4.3",
@@ -20,8 +21,10 @@
     "morgan": "~1.7.0",
     "node-cron": "^1.1.2",
     "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
     "passport-spotify": "^0.3.0",
     "request": "^2.79.0",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.3.0",
+    "spotify-web-api-node": "^2.4.0"
   }
 }
