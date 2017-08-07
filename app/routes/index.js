@@ -79,6 +79,9 @@ router.get('/profile', isAuthenticated, function(req, res, next) {
 });
 
 router.post('/search', function(req, res) {
+    var spotifyApi = new SpotifyWebApi({
+        accessToken: req.user.accessToken
+    });
 
     var query = '';
 

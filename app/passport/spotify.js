@@ -4,9 +4,9 @@ var User = require('../models/user');
 module.exports = function(passport) {
 
     passport.use(new SpotifyStrategy({
-            clientID: '23affdd1353d40b181322db6bbca406c',
-            clientSecret: 'b917af777ab946488da74aa1111d9d86',
-            callbackURL: 'http://localhost:3000/auth/spotify/callback/'
+            clientID: process.env.SPOTIFY_CLIENTID,
+            clientSecret: process.env.SPOTIFY_CLIENTSECRET,
+            callbackURL: process.env.SPOTIFY_CALLBACK_URL
         },
         function(accessToken, refreshToken, profile, done) {
             // asynchronous verification, for effect...
